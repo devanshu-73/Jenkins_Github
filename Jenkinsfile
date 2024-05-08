@@ -1,10 +1,6 @@
 pipeline {
     agent any
     
-    environment {
-        PYTHON_EXECUTABLE = "C:\\Users\\Devanshu Chauhan\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe"
-    }
-    
     stages {
         stage('Clone Repository') {
             steps {
@@ -15,8 +11,8 @@ pipeline {
             steps {
                 script {
                     dir('Jenkins_Github') {
-                        // Use the environment variable
-                        bat "\"${PYTHON_EXECUTABLE}\" Test_Git_Hub.py"
+                        // Use the environment variable 'python'
+                        bat '%python% Test_Git_Hub.py'
                     }
                 }
             }
