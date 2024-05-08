@@ -12,7 +12,7 @@ pipeline {
                 script {
                     dir('Jenkins_Github') {
                         // Use the environment variable 'python'
-                        bat '%python% Test_Git_Hub.py'
+                        bat 'C:\Users\Devanshu Chauhan\AppData\Local\Programs\Python\Python310\python.exe Test_Git_Hub.py'
                     }
                 }
             }
