@@ -13,10 +13,8 @@ pipeline {
                     // Print out the current directory for debugging
                     bat 'dir'
                     
-                    dir('Jenkins_Github') {
-                        // Execute the Python script
-                        bat 'python Test_Git_Hub.py'
-                    }
+                    // Execute the Python script directly
+                    bat 'python Jenkins_Github/Test_Git_Hub.py'
                 }
             }
         }
