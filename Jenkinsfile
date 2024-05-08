@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Clone the GitHub repository
-                git 'https://github.com/devanshu-73/Jenkins_Github.git'
+                // Clone the GitHub repository, specifying the 'main' branch
+                git branch: 'main', url: 'https://github.com/devanshu-73/Jenkins_Github.git'
             }
         }
         stage('Run Python Script') {
