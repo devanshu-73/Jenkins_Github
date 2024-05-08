@@ -10,7 +10,10 @@ pipeline {
         stage('Run Python Script') {
             steps {
                 script {
-                    bat 'python Test_Git_Hub.py'
+                    dir('Jenkins_Github') {
+                        // Specify the full path to the Python executable
+                        bat '"C:\\Users\\Devanshu Chauhan\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe" Test_Git_Hub.py'
+                    }
                 }
             }
         }
