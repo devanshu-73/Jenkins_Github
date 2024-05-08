@@ -14,7 +14,7 @@ pipeline {
                     bat 'dir'
                     
                     // Execute the Python script directly
-                    bat 'python Jenkins_Github/Test_Git_Hub.py'
+                    bat 'python Test_Git_Hub.py'
                 }
             }
         }
