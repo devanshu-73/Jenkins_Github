@@ -6,7 +6,7 @@ pipeline {
         sh 'python3 --version'
       }
     }
-    stage('Running Python File') {
+    stage('Test_Git_Hub') {
       steps {
         sh 'python3 Test_Git_Hub.py'
       }
