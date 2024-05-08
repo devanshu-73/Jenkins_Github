@@ -10,10 +10,9 @@ pipeline {
         stage('Run Python Script') {
             steps {
                 script {
-                    // Print out the current directory for debugging
+                    // Print current directory for debugging
                     bat 'dir'
                     
-                    // Execute the Python script directly
                     bat 'python Test_Git_Hub.py'
                 }
             }
