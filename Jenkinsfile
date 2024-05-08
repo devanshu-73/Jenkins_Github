@@ -2,8 +2,7 @@ pipeline {
     agent any
     
     environment {
-        // Use the environment variable PYTHON_HOME to reference the Python executable
-        PYTHON_EXECUTABLE = "${env.PYTHON_HOME}\\python.exe"
+        PYTHON_EXECUTABLE = "C:\\Users\\Devanshu Chauhan\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe"
     }
     
     stages {
@@ -16,8 +15,8 @@ pipeline {
             steps {
                 script {
                     dir('Jenkins_Github') {
-                        // Use the PYTHON_EXECUTABLE variable to run the Python script
-                        bat "${PYTHON_EXECUTABLE} Test_Git_Hub.py"
+                        // Use the environment variable
+                        bat "\"${PYTHON_EXECUTABLE}\" Test_Git_Hub.py"
                     }
                 }
             }
