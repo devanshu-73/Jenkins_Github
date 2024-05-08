@@ -10,8 +10,11 @@ pipeline {
         stage('Run Python Script') {
             steps {
                 script {
+                    // Print out the current directory for debugging
+                    bat 'dir'
+                    
                     dir('Jenkins_Github') {
-                        // Use the environment variable 'python'
+                        // Execute the Python script
                         bat 'python Test_Git_Hub.py'
                     }
                 }
