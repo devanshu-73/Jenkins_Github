@@ -1,6 +1,13 @@
 pipeline {
     agent any
     
+    tools {
+        // Define Python installation in Jenkins Global Tool Configuration
+        // Use the name "Python3" for reference
+        // Specify the installed Python version
+        python 'Python3'
+    }
+    
     stages {
         stage('Clone Repository') {
             steps {
@@ -10,8 +17,12 @@ pipeline {
         stage('Run Python Script') {
             steps {
                 script {
-                    // Change directory to the specified location and then run Python script
-                    bat 'cd d/ && "C:\\Users\\Devanshu Chauhan\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe" Test_Git_Hub.py'
+                    dir('Jenkins_Github') {
+                        // Use the tool step to reference the Python tool installation
+                        // Specify the script to run with Python
+                        // Use the name "Python3" to reference the tool installation
+                        bat '"${tool name: "Python3", type: "hudson.plugins.python.PythonInstallation"}/python.exe" Test_Git_Hub.py'
+                    }
                 }
             }
         }
