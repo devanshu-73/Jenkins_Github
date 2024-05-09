@@ -21,9 +21,7 @@ pipeline {
                     // Check if the container exists
                     def containerExists = bat(returnStatus: true, script: "docker ps -a --filter name=${CONTAINER_NAME} --format {{.Names}}").trim()
 
-                    if (containerExists) {
-                        echo "Container '${CONTAINER_NAME}' already exists"
-                    } else {
+                    if (!containerExists) {
                         // Create Docker container
                         def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                         bat dockerRunCommand
@@ -46,8 +44,8 @@ pipeline {
         always {
             script {
                 // Stop and remove Docker container
-                bat "docker stop ${CONTAINER_NAME}"
-                bat "docker rm ${CONTAINER_NAME}"
+                bat "docker stop ${CONTAINER_NAME} || true"
+                bat "docker rm ${CONTAINER_NAME} || true"
             }
         }
         success {
