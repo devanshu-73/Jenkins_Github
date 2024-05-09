@@ -3,7 +3,6 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'python:latest'
-        CONTAINER_NAME = 'my-python-container'
     }
     
     stages {
@@ -18,14 +17,12 @@ pipeline {
         stage('Check and Create Docker Container') {
             steps {
                 script {
-                    // Check if the container exists
-                    def containerExists = bat(returnStatus: true, script: "docker ps -a --filter name=${CONTAINER_NAME} --format {{.Names}}").trim()
+                    // Generate a unique container name based on container ID
+                    def containerName = "my-python-container-${UUID.randomUUID().toString()}"
 
-                    if (!containerExists) {
-                        // Create Docker container
-                        def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
-                        bat dockerRunCommand
-                    }
+                    // Create Docker container
+                    def dockerRunCommand = "docker run -d --name ${containerName} ${DOCKER_IMAGE}"
+                    bat dockerRunCommand
                 }
             }
         }
@@ -34,7 +31,7 @@ pipeline {
             steps {
                 script {
                     // Execute Python script inside the Docker container
-                    bat "docker exec ${CONTAINER_NAME} python -c \"print('Hello from Python inside Docker!')\""
+                    bat "docker exec ${containerName} python -c \"print('Hello from Python inside Docker!')\""
                 }
             }
         }
@@ -43,9 +40,12 @@ pipeline {
     post {
         always {
             script {
+                // Print directory contents
+                bat "docker exec ${containerName} ls -l /"
+                
                 // Stop and remove Docker container
-                bat "docker stop ${CONTAINER_NAME} || true"
-                bat "docker rm ${CONTAINER_NAME} || true"
+                bat "docker stop ${containerName} || true"
+                bat "docker rm ${containerName} || true"
             }
         }
         success {
