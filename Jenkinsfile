@@ -21,7 +21,7 @@ pipeline {
                 script {
                     // Run Docker container
                     def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
-                    bat (dockerRunCommand)
+                    bat dockerRunCommand
                 }
             }
         }
@@ -30,9 +30,7 @@ pipeline {
             steps {
                 // Execute a Python script inside the Docker container
                 script {
-                    docker.image(DOCKER_IMAGE).inside {
-                        bat 'python -c "print(\'Hello from Python inside Docker!\')"'
-                    }
+                    bat 'docker exec ${CONTAINER_NAME} python -c "print(\'Hello from Python inside Docker!\')"'
                 }
             }
         }
