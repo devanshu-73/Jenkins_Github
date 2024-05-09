@@ -20,7 +20,8 @@ pipeline {
             steps {
                 script {
                     // Run Docker container
-                    docker.image(DOCKER_IMAGE).run("-d --name ${CONTAINER_NAME}")
+                    def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+                    sh dockerRunCommand
                 }
             }
         }
@@ -29,25 +30,30 @@ pipeline {
             steps {
                 // Execute a Python script inside the Docker container
                 script {
-                    docker.container(CONTAINER_NAME).inside {
+                    docker.image(DOCKER_IMAGE).inside {
                         sh 'python -c "print(\'Hello from Python inside Docker!\')"'
                     }
-                }
-            }
-        }
-        
-        stage('Stop Docker Container') {
-            steps {
-                // Stop and remove Docker container
-                script {
-                    docker.container(CONTAINER_NAME).stop()
-                    docker.container(CONTAINER_NAME).remove(force: true)
                 }
             }
         }
     }
     
     post {
+        always {
+            // Stop and remove Docker container
+            script {
+                try {
+                    sh "docker stop ${CONTAINER_NAME}"
+                } catch (Exception e) {
+                    echo "Failed to stop container: ${e.message}"
+                }
+                try {
+                    sh "docker rm ${CONTAINER_NAME}"
+                } catch (Exception e) {
+                    echo "Failed to remove container: ${e.message}"
+                }
+            }
+        }
         success {
             echo 'Pipeline successful!'
         }
