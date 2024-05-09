@@ -36,23 +36,4 @@ pipeline {
             }
         }
     }
-    
-    post {
-        always {
-            script {
-                // Print directory contents
-                bat "docker exec ${containerName} ls -l /"
-                
-                // Stop and remove Docker container
-                bat "docker stop ${containerName} || true"
-                bat "docker rm ${containerName} || true"
-            }
-        }
-        success {
-            echo 'Pipeline successful!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
 }
