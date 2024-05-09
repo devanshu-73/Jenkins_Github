@@ -1,60 +1,29 @@
 pipeline {
     agent any
     
-    environment {
-        DOCKER_IMAGE = 'python:latest'
-        CONTAINER_NAME = "my-python-container-${UUID.randomUUID().toString()}"
-        GITHUB_REPO_URL = 'https://github.com/devanshu-73/Jenkins_Github.git'
-        SCRIPT_NAME = 'Test_Git_Hub.py'  // Update this with the name of your Python script
-    }
-    
     stages {
-        stage('Pull Docker Image') {
+        stage('Pull from GitHub') {
             steps {
+                git 'https://github.com/devanshu-73/Jenkins_Github.git'
                 script {
-                    docker.image(DOCKER_IMAGE).pull()
-                }
-            }
-        }
-        
-        stage('Check and Create Docker Container') {
-            steps {
-                script {
-                    // Create Docker container
-                    def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
-                    bat dockerRunCommand
-                }
-            }
-        }
-        
-        stage('Clone GitHub Repository') {
-            steps {
-                script {
-                    // Clone GitHub repository
-                    git branch: 'main', url: GITHUB_REPO_URL
-                    // Print the files pulled from GitHub
                     echo 'Files pulled from GitHub:'
-                    bat 'ls -l'
+                    bat 'dir' // List files pulled from GitHub
                 }
             }
         }
-        
-        stage('Copy Script to Docker Container') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Copy script to Docker container
-                    def dockerCopyCommand = "docker cp ${SCRIPT_NAME} ${CONTAINER_NAME}:/"
-                    bat dockerCopyCommand
+                    docker.build('my-python-image') // Build Docker image
                 }
             }
         }
-        
-        stage('Execute Python Script') {
+        stage('Run Python Script in Container') {
             steps {
                 script {
-                    // Execute Python script inside the Docker container
-                    def dockerExecCommand = "docker exec ${CONTAINER_NAME} python /${SCRIPT_NAME}"
-                    bat dockerExecCommand
+                    docker.image('my-python-image').inside {
+                        sh 'python Test_Git_Hub.py' // Run Test_Git_Hub.py script inside the container
+                    }
                 }
             }
         }
