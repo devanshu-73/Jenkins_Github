@@ -3,14 +3,13 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'python:latest'
-        CONTAINER_NAME = 'my-python-container'
+        CONTAINER_NAME = 'my-python-container' // Define the CONTAINER_NAME variable here
     }
     
     stages {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    // Pull the Docker image
                     docker.image(DOCKER_IMAGE).pull()
                 }
             }
@@ -19,7 +18,6 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    // Run Docker container
                     def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                     bat dockerRunCommand
                 }
@@ -28,9 +26,8 @@ pipeline {
         
         stage('Execute Python Script') {
             steps {
-                // Execute a Python script inside the Docker container
                 script {
-                    bat 'docker exec ${CONTAINER_NAME} python -c "print(\'Hello from Python inside Docker!\')"'
+                    bat "docker exec ${CONTAINER_NAME} python -c \"print('Hello from Python inside Docker!')\""
                 }
             }
         }
@@ -38,18 +35,9 @@ pipeline {
     
     post {
         always {
-            // Stop and remove Docker container
             script {
-                try {
-                    bat "docker stop ${CONTAINER_NAME}"
-                } catch (Exception e) {
-                    echo "Failed to stop container: ${e.message}"
-                }
-                try {
-                    bat "docker rm ${CONTAINER_NAME}"
-                } catch (Exception e) {
-                    echo "Failed to remove container: ${e.message}"
-                }
+                bat "docker stop ${CONTAINER_NAME}"
+                bat "docker rm ${CONTAINER_NAME}"
             }
         }
         success {
