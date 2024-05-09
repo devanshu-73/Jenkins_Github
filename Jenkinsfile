@@ -1,21 +1,58 @@
 pipeline {
     agent any
     
+    environment {
+        DOCKER_IMAGE = 'python:latest'
+        CONTAINER_NAME = 'my-python-container'
+    }
+    
     stages {
-        stage('Clone Repository') {
-            steps {
-                git branch: 'main', url: 'https://github.com/devanshu-73/Jenkins_Github.git'
-            }
-        }
-        stage('Run Python Script') {
+        stage('Pull Docker Image') {
             steps {
                 script {
-                    // Print current directory for debugging
-                    bat 'dir'
-                    
-                    bat 'python Test_Git_Hub.py'
+                    // Pull the Docker image
+                    docker.image(DOCKER_IMAGE).pull()
                 }
             }
+        }
+        
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Run Docker container
+                    docker.image(DOCKER_IMAGE).run("--name ${CONTAINER_NAME} -d")
+                }
+            }
+        }
+        
+        stage('Execute Python Script') {
+            steps {
+                // Execute a Python script inside the Docker container
+                script {
+                    docker.container(CONTAINER_NAME).inside {
+                        sh 'python -c "print(\'Hello from Python inside Docker!\')"'
+                    }
+                }
+            }
+        }
+        
+        stage('Stop Docker Container') {
+            steps {
+                // Stop and remove Docker container
+                script {
+                    docker.container(CONTAINER_NAME).stop()
+                    docker.container(CONTAINER_NAME).remove(force: true)
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline successful!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
