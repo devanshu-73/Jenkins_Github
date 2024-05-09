@@ -3,6 +3,8 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'python:latest'
+        CONTAINER_NAME = "my-python-container-${UUID.randomUUID().toString()}"
+        GITHUB_REPO_URL = 'https://github.com/devanshu-73/Jenkins_Github.git'
     }
     
     stages {
@@ -17,12 +19,18 @@ pipeline {
         stage('Check and Create Docker Container') {
             steps {
                 script {
-                    // Generate a unique container name based on container ID
-                    def containerName = "my-python-container-${UUID.randomUUID().toString()}"
-
                     // Create Docker container
-                    def dockerRunCommand = "docker run -d --name ${containerName} ${DOCKER_IMAGE}"
+                    def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
                     bat dockerRunCommand
+                }
+            }
+        }
+        
+        stage('Clone GitHub Repository') {
+            steps {
+                script {
+                    // Clone GitHub repository
+                    git branch: 'main', credentialsId: 'your-credentials-id', url: GITHUB_REPO_URL
                 }
             }
         }
@@ -31,7 +39,10 @@ pipeline {
             steps {
                 script {
                     // Execute Python script inside the Docker container
-                    bat "docker exec ${containerName} python -c \"print('Hello from Python inside Docker!')\""
+                    bat dir
+                    def pythonScriptPath = 'Test_Git_Hub.py'  // Update this with your script path
+                    def dockerExecCommand = "docker exec ${CONTAINER_NAME} python ${pythonScriptPath}"
+                    bat dockerExecCommand
                 }
             }
         }
