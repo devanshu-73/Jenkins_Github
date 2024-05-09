@@ -34,7 +34,7 @@ pipeline {
                     git branch: 'main', url: GITHUB_REPO_URL
                     // Print the files pulled from GitHub
                     echo 'Files pulled from GitHub:'
-                    sh 'ls -l'
+                    bat 'ls -l'
                 }
             }
         }
