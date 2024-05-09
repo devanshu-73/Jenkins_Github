@@ -19,9 +19,9 @@ pipeline {
             steps {
                 script {
                     // Check if the container exists
-                    def containerExists = sh(returnStatus: true, script: "docker ps -a --filter name=${CONTAINER_NAME} --format '{{.Names}}'").trim()
+                    def containerExists = bat(returnStatus: true, script: "docker ps -a --filter name=${CONTAINER_NAME} --format {{.Names}}").trim()
                     
-                    if (containerExists) {
+                    if (containerExists == 0) {
                         echo "Container '${CONTAINER_NAME}' already exists"
                     } else {
                         // Create Docker container
