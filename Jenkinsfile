@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'python:latest'
-        CONTAINER_NAME = 'my-python-container' // Define the CONTAINER_NAME variable here
+        CONTAINER_NAME = 'my-python-container'
     }
     
     stages {
@@ -15,11 +15,19 @@ pipeline {
             }
         }
         
-        stage('Run Docker Container') {
+        stage('Check and Create Docker Container') {
             steps {
                 script {
-                    def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
-                    bat dockerRunCommand
+                    // Check if the container exists
+                    def containerExists = sh(returnStatus: true, script: "docker ps -a --filter name=${CONTAINER_NAME} --format '{{.Names}}'").trim()
+                    
+                    if (containerExists) {
+                        echo "Container '${CONTAINER_NAME}' already exists"
+                    } else {
+                        // Create Docker container
+                        def dockerRunCommand = "docker run -d --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+                        bat dockerRunCommand
+                    }
                 }
             }
         }
@@ -27,6 +35,7 @@ pipeline {
         stage('Execute Python Script') {
             steps {
                 script {
+                    // Execute Python script inside the Docker container
                     bat "docker exec ${CONTAINER_NAME} python -c \"print('Hello from Python inside Docker!')\""
                 }
             }
@@ -36,6 +45,7 @@ pipeline {
     post {
         always {
             script {
+                // Stop and remove Docker container
                 bat "docker stop ${CONTAINER_NAME}"
                 bat "docker rm ${CONTAINER_NAME}"
             }
